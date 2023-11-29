@@ -1,11 +1,14 @@
+// URL for API
 const API_URL = `https://fsa-crud-2aa9294fe819.herokuapp.com/api/2310-GHP-ET-WEB-FT-SF/events`;
 
+// Declared my state variables
 const state = {
   events: [],
 };
 
 const eventContainer = document.querySelector("#eventContainer");
 
+// async function to fetch the event data from the API
 async function fetchEventData() {
   try {
     const response = await fetch(API_URL);
@@ -16,6 +19,7 @@ async function fetchEventData() {
   }
 }
 
+// async function to render data after it recieves it from fetch function
 async function render() {
   state.events = await fetchEventData();
 
@@ -28,9 +32,9 @@ async function render() {
     let newDate = new Date(date).toLocaleString();
     const li = document.createElement("li");
     li.innerHTML = `
-        <h3>Event Name: ${name}</h3>
-        <p>Date & Time: ${newDate}</p>
-        <address>${location}</address>
+        <p><b>Event Name:</b> ${name}</p>
+        <p><b>Date & Time:</b> ${newDate}</p>
+        <p><b>Address: </b>${location}</p>
     `;
 
     eventContainer.appendChild(li);

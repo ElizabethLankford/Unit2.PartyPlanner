@@ -1,0 +1,13 @@
+body {
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: space-evenly;
+}
+ul > li{
+    list-style-type: none;
+    padding-bottom: 1em;
+}
+p{
+    margin: 3px;
+}
+
