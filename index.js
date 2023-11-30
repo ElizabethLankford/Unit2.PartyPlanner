@@ -7,7 +7,14 @@ const state = {
 };
 
 const eventContainer = document.querySelector("#eventContainer");
+const form = document.querySelector("#addEvent");
+form.addEventListener("submit", createEvent);
 
+async function init() {
+  await fetchEventData();
+  render();
+}
+init();
 // async function to fetch the event data from the API
 async function fetchEventData() {
   try {
@@ -41,4 +48,68 @@ async function render() {
   });
 }
 
-render();
+// Create event then add funciton
+async function createEvent(event) {
+  try {
+    event.preventDefault();
+    const eventname = event.target.eventName.value;
+    const eventdate = event.target.eventDate.value;
+    const eventlocation = event.target.eventAddress.value;
+
+    const newDate = new Date(eventdate).toISOString();
+    console.log(eventname, newDate, eventlocation);
+
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: eventname,
+        description: "description example",
+        date: newDate,
+        location: eventlocation,
+      }),
+    });
+    const createdEvent = await response.json();
+    console.log(createdEvent);
+
+    if (createdEvent.error) {
+      throw new Error(createdEvent.message);
+    }
+    render();
+  } catch (error) {
+    console.log(error);
+  }
+}
+// Add event function
+/* async function addEvent(event) {
+  event.preventDefault();
+
+  const name = event.target.eventName.value;
+  const date = event.target.eventDate.value;
+  const location = event.target.eventAddress.value;
+  await createEvent(name, date, location);
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        date: date,
+        location: location,
+      }),
+    });
+
+    const createdEvent = await response.json();
+    if (createdEvent.error) {
+      throw new Error(createdEvent.message);
+    }
+    render();
+  } catch (error) {
+    console.log(error);
+  }
+}
+*/
