@@ -10,4 +10,20 @@ ul > li{
 p{
     margin: 3px;
 }
-
+#addEventDiv{
+    min-width: 150px;
+}
+#listEventDiv{
+    min-width: 250px;
+}
+button{
+    padding: 3px;
+}
+@media (max-width: 500px){
+    body{
+        flex-wrap: wrap-reverse;
+    }
+    #addEventDiv{
+        min-width: 200px;
+    }
+}

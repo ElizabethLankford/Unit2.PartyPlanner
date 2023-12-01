@@ -10,9 +10,10 @@ const eventContainer = document.querySelector("#eventContainer");
 const form = document.querySelector("#addEvent");
 form.addEventListener("submit", createEvent);
 
+// initiating function
 async function init() {
   await fetchEventData();
-  render();
+  await render();
 }
 init();
 // async function to fetch the event data from the API
@@ -34,18 +35,28 @@ async function render() {
     eventContainer.innerText = "No events found!";
   }
 
-  state.events.map((event) => {
-    const { name, date, location } = event;
-    let newDate = new Date(date).toLocaleString();
+  const eventItems = state.events.map((event) => {
+    let newDate = new Date(event.date).toLocaleString();
     const li = document.createElement("li");
     li.innerHTML = `
-        <p><b>Event Name:</b> ${name}</p>
+        <p><b>Event Name:</b> ${event.name}</p>
         <p><b>Date & Time:</b> ${newDate}</p>
-        <p><b>Address: </b>${location}</p>
+        <p><b>Address: </b>${event.location}</p>
     `;
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete Event";
+    li.append(deleteBtn);
 
-    eventContainer.appendChild(li);
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit Event";
+    li.append(editBtn);
+
+    deleteBtn.addEventListener("click", () => deleteEvent(event.id));
+    editBtn.addEventListener("click", () => editEvent(event.id));
+    return li;
   });
+  eventContainer.replaceChildren(...eventItems);
+  console.log(state.events);
 }
 
 // Create event then add funciton
@@ -73,43 +84,58 @@ async function createEvent(event) {
     });
     const createdEvent = await response.json();
     console.log(createdEvent);
+    form.reset();
 
     if (createdEvent.error) {
       throw new Error(createdEvent.message);
     }
-    render();
   } catch (error) {
     console.log(error);
   }
-}
-// Add event function
-/* async function addEvent(event) {
-  event.preventDefault();
 
-  const name = event.target.eventName.value;
-  const date = event.target.eventDate.value;
-  const location = event.target.eventAddress.value;
-  await createEvent(name, date, location);
+  init();
+}
+
+//Delete event function
+
+async function deleteEvent(id) {
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
+    await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
+    console.log("Delete btn pressed", id);
+  } catch (error) {
+    console.log(error);
+  }
+
+  init();
+}
+
+// Edit event function
+
+async function editEvent(id) {
+  try {
+    console.log("edit btn clicked", id);
+    const newDate = new Date(form.eventDate.value).toISOString();
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: name,
-        date: date,
-        location: location,
+        name: form.eventName.value,
+        description: "description example",
+        date: newDate,
+        location: form.eventAddress.value,
       }),
     });
-
-    const createdEvent = await response.json();
-    if (createdEvent.error) {
-      throw new Error(createdEvent.message);
+    const editedEventResponse = await response.json();
+    if (editedEventResponse.error) {
+      throw new Error(editedEventResponse.message);
     }
-    render();
+    init();
+    form.reset();
   } catch (error) {
     console.log(error);
   }
 }
-*/
